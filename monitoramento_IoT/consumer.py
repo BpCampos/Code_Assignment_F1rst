@@ -2,6 +2,24 @@ from quixstreams import Application
 import pyodbc
 from dotenv import load_dotenv
 import os
+import logging
+
+# Pega o caminho atual que o script está localizado
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Cria o nome que o arquivo de log terá
+log_file = os.path.join(script_dir, 'info.log')
+
+# Configuração do logger
+logging.basicConfig(
+    filename=log_file,
+    filemode='w',
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %I:%M:%S',
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 

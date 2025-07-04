@@ -3,19 +3,37 @@ import random
 from datetime import datetime
 from faker import Faker
 from quixstreams import Application
+import logging
+import os
 
-# Initialize Faker
+# Pega o caminho atual que o script está localizado
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Cria o nome que o arquivo de log terá
+log_file = os.path.join(script_dir, 'info.log')
+
+# Configuração do logger
+logging.basicConfig(
+    filename=log_file,
+    filemode='w',
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %I:%M:%S',
+    level=logging.INFO
+)
+
+logger = logging.getLogger(__name__)
+
+# Inicializa a biblioteca faker para geração de dados ficticios
 fake = Faker()
 
-# Initialize Quix Application
+# Inicializando o broker kafka
 app = Application(broker_address="localhost:9092")
 
-# Define topic with JSON serializer
+# Definindo um topico com valores em JSON
 topic = app.topic(name="iot-data", value_serializer="json")
 
-# Function to generate fake IoT sensor data
 
-
+# Gerando dicionario com valores ficticios
 def generate_iot_data():
     return {
         "device_id": f"sensor_{fake.uuid4()[:8]}",
@@ -27,7 +45,7 @@ def generate_iot_data():
     }
 
 
-# Get the producer and send data in a loop
+# Usa o produtor para enviar dados para o topico Kafka
 with app.get_producer() as producer:
     while True:
         data = generate_iot_data()
@@ -41,4 +59,4 @@ with app.get_producer() as producer:
         )
 
         print(f"Sent: {data}")
-        time.sleep(1)  # Wait a bit before sending next message
+        time.sleep(1)
