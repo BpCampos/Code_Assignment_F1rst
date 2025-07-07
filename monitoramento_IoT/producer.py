@@ -5,12 +5,13 @@ from faker import Faker
 from quixstreams import Application
 import logging
 import os
+import sys
 
 # Pega o caminho atual que o script está localizado
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Cria o nome que o arquivo de log terá
-log_file = os.path.join(script_dir, 'info.log')
+log_file = os.path.join(script_dir, 'producer.log')
 
 # Configuração do logger
 logging.basicConfig(
@@ -23,18 +24,11 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# Inicializa a biblioteca faker para geração de dados ficticios
-fake = Faker()
 
-# Inicializando o broker kafka
-app = Application(broker_address="localhost:9092")
-
-# Definindo um topico com valores em JSON
-topic = app.topic(name="iot-data", value_serializer="json")
-
-
-# Gerando dicionario com valores ficticios
 def generate_iot_data():
+    logger.info('Inicializado gerador de dados ficticios')
+    fake = Faker()
+
     return {
         "device_id": f"sensor_{fake.uuid4()[:8]}",
         "location": fake.city(),
@@ -45,18 +39,37 @@ def generate_iot_data():
     }
 
 
-# Usa o produtor para enviar dados para o topico Kafka
-with app.get_producer() as producer:
-    while True:
-        data = generate_iot_data()
-        msg = topic.serialize(key=data["device_id"], value=data)
+def kafka_init():
+    try:
+        logger.info('Inicializando o broker Kafka')
+        app = Application(broker_address="localhost:9092")
 
-        # Send to Kafka
-        producer.produce(
-            topic=topic.name,
-            key=msg.key,
-            value=msg.value
-        )
+        logger.info('Definindo um topico Kafka')
+        topic = app.topic(name="iot-data", value_serializer="json")
 
-        print(f"Sent: {data}")
-        time.sleep(1)
+        logger.info('Gerando dados e enviando para o topico Kafka')
+        with app.get_producer() as producer:
+            while True:
+                data = generate_iot_data()
+                msg = topic.serialize(key=data["device_id"], value=data)
+
+                # Send to Kafka
+                producer.produce(
+                    topic=topic.name,
+                    key=msg.key,
+                    value=msg.value
+                )
+
+                print(f"Sent: {data}")
+                time.sleep(1)
+    except Exception as e:
+        logger.error(e)
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    try:
+        kafka_init()
+    except Exception as e:
+        logger.error(e)
+        sys.exit(1)
