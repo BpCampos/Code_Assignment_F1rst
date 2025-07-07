@@ -40,32 +40,28 @@ def generate_iot_data():
 
 
 def kafka_init():
-    try:
-        logger.info('Inicializando o broker Kafka')
-        app = Application(broker_address="localhost:9092")
+    logger.info('Inicializando o broker Kafka')
+    app = Application(broker_address="localhost:9092")
 
-        logger.info('Definindo um topico Kafka')
-        topic = app.topic(name="iot-data", value_serializer="json")
+    logger.info('Definindo um topico Kafka')
+    topic = app.topic(name="iot-data", value_serializer="json")
 
-        logger.info('Gerando dados e enviando para o topico Kafka')
-        with app.get_producer() as producer:
-            while True:
-                logger.info('Gerando dados')
-                data = generate_iot_data()
-                msg = topic.serialize(key=data["device_id"], value=data)
+    logger.info('Gerando dados e enviando para o topico Kafka')
+    with app.get_producer() as producer:
+        while True:
+            logger.info('Gerando dados')
+            data = generate_iot_data()
+            msg = topic.serialize(key=data["device_id"], value=data)
 
-                # Send to Kafka
-                producer.produce(
-                    topic=topic.name,
-                    key=msg.key,
-                    value=msg.value
-                )
+            # Send to Kafka
+            producer.produce(
+                topic=topic.name,
+                key=msg.key,
+                value=msg.value
+            )
 
-                print(f"Sent: {data}")
-                time.sleep(1)
-    except Exception as e:
-        logger.error(e)
-        sys.exit(1)
+            print(f"Sent: {data}")
+            time.sleep(1)
 
 
 if __name__ == '__main__':
