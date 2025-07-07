@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 
 def generate_iot_data():
-    logger.info('Inicializado gerador de dados ficticios')
     fake = Faker()
 
     return {
@@ -50,6 +49,7 @@ def kafka_init():
         logger.info('Gerando dados e enviando para o topico Kafka')
         with app.get_producer() as producer:
             while True:
+                logger.info('Gerando dados')
                 data = generate_iot_data()
                 msg = topic.serialize(key=data["device_id"], value=data)
 
