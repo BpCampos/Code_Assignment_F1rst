@@ -16,17 +16,16 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: sqlserver
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SA_PASSWORD}
+  postgres:
+    image: postgres:15
     ports:
-      - '1433:1433'
-    restart: unless-stopped
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: iot_user
+      POSTGRES_PASSWORD: senha
+      POSTGRES_DB: iot_data
     volumes:
-      - sql_data:/var/opt/mssql
+      - pg_data:/var/lib/postgresql/data
 
 volumes:
-  sql_data:
+  pg_data:

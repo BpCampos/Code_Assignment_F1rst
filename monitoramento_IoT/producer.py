@@ -17,6 +17,7 @@ log_file = os.path.join(script_dir, 'producer.log')
 logging.basicConfig(
     filename=log_file,
     filemode='w',
+    encoding='utf-8',
     format='%(asctime)s - %(levelname)s - %(message)s',
     datefmt='%Y-%m-%d %I:%M:%S',
     level=logging.INFO
