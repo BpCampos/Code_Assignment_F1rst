@@ -3,3 +3,5 @@ diario_de_bordo/venv/
 monitoramento_IoT/venv/
 
 monitoramento_IoT/.env
+
+*.log
