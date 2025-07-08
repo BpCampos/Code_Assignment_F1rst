@@ -21,9 +21,9 @@ services:
     ports:
       - "5434:5432"
     environment:
-      POSTGRES_USER: iot_user
-      POSTGRES_PASSWORD: senha
-      POSTGRES_DB: iot_data
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - pg_data:/var/lib/postgresql/data
 

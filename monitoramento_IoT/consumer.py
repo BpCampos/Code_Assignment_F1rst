@@ -30,11 +30,11 @@ load_dotenv()
 try:
     logger.info('Adquirindo conexao com SQL Server')
     conn = psycopg2.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=os.getenv("DB_PORT", "5434"),
-        dbname=os.getenv("DB_NAME", "iot_data"),
-        user=os.getenv("DB_USER", "iot_user"),
-        password=os.getenv("DB_PASSWORD", "senha")
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD")
     )
     cursor = conn.cursor()
 except Exception as e:
